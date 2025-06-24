@@ -1,0 +1,41 @@
+storage-type: mysql  # Choose between mysql, sqlite, mongodb
+mysql:
+  # If you choose mysql as your storage-type, fill out these details
+  host: 127.0.0.1
+  port: 3306
+  database: punishments
+  user: root
+  password: ''
+mongodb:
+  # If you choose mongodb as your storage-type, fill out these details
+  host: 127.0.0.1
+  port: 27017
+  database: punishments
+  user: root
+  password: ''
+  authDatabase: admin  # The database to authenticate the user with
+
+messages:
+  user:
+    banned: "&cYou are banned from joining the server for reason: &7{reason}"
+    temp-banned: "&cYou are banned from joining the server for &7{time}&c for reason: &7{reason}"
+    muted: "&cYou are muted for reason: &7{reason}"
+    temp-muted: "&cYou are muted for &7{time}&c for reason: &7{reason}"
+    unmuted: "&aYou have been unmuted!"
+    kicked: "&cYou were kicked for reason: &7{reason}"
+  admin:
+    ban: "&cYou have permanently banned &7{player}&c!"
+    ip-ban: "&cYou have permanently banned the IP &7{ip}&c!"
+    temp-ban: "&cYou have banned &7{player}&c for &7{time}&c!"
+    unban: "&cYou have unbanned &7{player}&c!"
+    unban-ip: "&cYou have unbanned the IP &7{ip}&c!"
+    mute: "&cYou have permanently muted &7{player}&c!"
+    temp-mute: "&cYou have muted &7{player}&c for &7{time}&c!"
+    unmute: "&cYou have unmuted &7{player}&c!"
+    kick: "&cYou kicked &7{player}&c for reason: &7{reason}"
+    already-banned: "&cPlayer &7{player}&c is already banned."
+    already-ip-banned: "&cThe IP &7{ip}&c is already banned."
+    already-muted: "&cPlayer &7{player}&c is already muted."
+    wasnt-banned: "&cPlayer &7{player}&c is not currently banned."
+    wasnt-ip-banned: "&cThe IP &7{ip}&c is not currently banned."
+    wasnt-muted: "&cPlayer &7{player}&c is not currently muted."

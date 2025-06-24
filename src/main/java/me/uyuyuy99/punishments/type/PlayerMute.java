@@ -4,11 +4,11 @@ import org.bukkit.OfflinePlayer;
 
 public class PlayerMute extends PlayerPunishment {
 
-    public PlayerMute(OfflinePlayer player, String reason) {
-        super(player, reason);
+    public PlayerMute(int id, OfflinePlayer player, String reason) {
+        super(id, player, reason);
     }
-    public PlayerMute(String uuidString, String reason) {
-        super(uuidString, reason);
+    public PlayerMute(int id, String uuidString, String reason) {
+        super(id, uuidString, reason);
     }
     
 }

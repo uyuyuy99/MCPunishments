@@ -4,11 +4,11 @@ import org.bukkit.OfflinePlayer;
 
 public class PlayerBan extends PlayerPunishment {
 
-    public PlayerBan(OfflinePlayer player, String reason) {
-        super(player, reason);
+    public PlayerBan(int id, OfflinePlayer player, String reason) {
+        super(id, player, reason);
     }
-    public PlayerBan(String uuidString, String reason) {
-        super(uuidString, reason);
+    public PlayerBan(int id, String uuidString, String reason) {
+        super(id, uuidString, reason);
     }
 
 }

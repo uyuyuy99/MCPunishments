@@ -4,8 +4,8 @@ import org.bukkit.OfflinePlayer;
 
 public class IpBan extends IpPunishment {
 
-    public IpBan(String ip, String reason) {
-        super(ip, reason);
+    public IpBan(int id, String ip, String reason) {
+        super(id, ip, reason);
     }
 
 }
