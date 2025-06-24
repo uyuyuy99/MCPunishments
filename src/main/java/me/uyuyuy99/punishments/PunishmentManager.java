@@ -48,9 +48,10 @@ public class PunishmentManager {
             ((Player) player).kickPlayer(Config.getMsg("user.banned", "reason", reason));
         }
 
-        int id = db.addBan(player, reason);
-        PlayerBan ban = new PlayerBan(id, player, reason);
-        playerBans.put(player.getUniqueId(), ban);
+        db.addBan(player, reason).thenAccept((id) -> {
+            PlayerBan ban = new PlayerBan(id, player, reason);
+            playerBans.put(player.getUniqueId(), ban);
+        });
 
         return true;
     }
@@ -65,9 +66,10 @@ public class PunishmentManager {
                     "reason", reason));
         }
 
-        int id = db.addBan(player, reason, validUntil);
-        PlayerTempBan ban = new PlayerTempBan(id, player, reason, System.currentTimeMillis() + validUntil);
-        playerTempBans.put(player.getUniqueId(), ban);
+        db.addBan(player, reason, validUntil).thenAccept((id) -> {
+            PlayerTempBan ban = new PlayerTempBan(id, player, reason, System.currentTimeMillis() + validUntil);
+            playerTempBans.put(player.getUniqueId(), ban);
+        });
 
         return true;
     }
@@ -93,9 +95,10 @@ public class PunishmentManager {
             Config.sendMsg("user.muted", ((Player) player), "reason", reason);
         }
 
-        int id = db.addMute(player, reason);
-        PlayerMute mute = new PlayerMute(id, player, reason);
-        playerMutes.put(player.getUniqueId(), mute);
+        db.addMute(player, reason).thenAccept((id) -> {
+            PlayerMute mute = new PlayerMute(id, player, reason);
+            playerMutes.put(player.getUniqueId(), mute);
+        });
 
         return true;
     }
@@ -110,9 +113,10 @@ public class PunishmentManager {
                     "reason", reason);
         }
 
-        int id = db.addMute(player, reason, validUntil);
-        PlayerTempMute mute = new PlayerTempMute(id, player, reason, System.currentTimeMillis() + validUntil);
-        playerTempMutes.put(player.getUniqueId(), mute);
+        db.addMute(player, reason, validUntil).thenAccept((id) -> {
+            PlayerTempMute mute = new PlayerTempMute(id, player, reason, System.currentTimeMillis() + validUntil);
+            playerTempMutes.put(player.getUniqueId(), mute);
+        });
 
         return true;
     }
@@ -144,9 +148,10 @@ public class PunishmentManager {
             }
         }
 
-        int id = db.addIpBan(ip, reason);
-        IpBan ban = new IpBan(id, ip, reason);
-        ipBans.put(ip, ban);
+        db.addIpBan(ip, reason).thenAccept((id) -> {
+            IpBan ban = new IpBan(id, ip, reason);
+            ipBans.put(ip, ban);
+        });
 
         return true;
     }

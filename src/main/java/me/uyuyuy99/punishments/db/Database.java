@@ -7,6 +7,7 @@ import me.uyuyuy99.punishments.type.PlayerPunishment;
 import org.bukkit.OfflinePlayer;
 
 import java.sql.SQLException;
+import java.util.concurrent.CompletableFuture;
 
 public abstract class Database {
 
@@ -22,25 +23,25 @@ public abstract class Database {
 
     public abstract void loadValidPunishments() throws SQLException;
 
-    protected abstract int addPlayerPunishment(String type, OfflinePlayer player, String reason, long validUntil);
+    protected abstract CompletableFuture<Integer> addPlayerPunishment(String type, OfflinePlayer player, String reason, long validUntil);
 
     public abstract void removePlayerPunishment(PlayerPunishment punishment);
 
-    public abstract int addIpBan(String ip, String reason);
+    public abstract CompletableFuture<Integer> addIpBan(String ip, String reason);
 
     public abstract void removeIpBan(IpPunishment punishment);
 
-    public int addBan(OfflinePlayer player, String reason, long validUntil) {
+    public CompletableFuture<Integer> addBan(OfflinePlayer player, String reason, long validUntil) {
         return addPlayerPunishment("ban", player, reason, validUntil);
     }
-    public int addBan(OfflinePlayer player, String reason) {
+    public CompletableFuture<Integer> addBan(OfflinePlayer player, String reason) {
         return addBan(player, reason, 0);
     }
 
-    public int addMute(OfflinePlayer player, String reason, long validUntil) {
+    public CompletableFuture<Integer> addMute(OfflinePlayer player, String reason, long validUntil) {
         return addPlayerPunishment("mute", player, reason, validUntil);
     }
-    public int addMute(OfflinePlayer player, String reason) {
+    public CompletableFuture<Integer> addMute(OfflinePlayer player, String reason) {
         return addMute(player, reason, 0);
     }
 

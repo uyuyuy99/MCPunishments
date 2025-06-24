@@ -5,6 +5,7 @@ import me.uyuyuy99.punishments.type.*;
 import org.bukkit.OfflinePlayer;
 
 import java.sql.*;
+import java.util.concurrent.CompletableFuture;
 
 public class MysqlDatabase extends Database {
 
@@ -112,29 +113,30 @@ public class MysqlDatabase extends Database {
     }
 
     @Override
-    protected int addPlayerPunishment(String type, OfflinePlayer player, String reason, long validUntil) {
-        try {
-            PreparedStatement statement = connection.prepareStatement(
-                "INSERT INTO `player_punishments`"
-                        + " (`uuid`, `punishment`, `time_start`, `time_end`, `reason`, `valid`)"
-                        + " VALUES (?, ?, ?, ?, ?, ?)",
-                    Statement.RETURN_GENERATED_KEYS
-            );
-            statement.setString(1, player.getUniqueId().toString());
-            statement.setString(2, type);
-            statement.setLong(3, System.currentTimeMillis());
-            statement.setLong(4, validUntil);
-            statement.setString(5, reason);
-            statement.setInt(6, 1);
+    protected CompletableFuture<Integer> addPlayerPunishment(String type, OfflinePlayer player, String reason, long validUntil) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                PreparedStatement statement = connection.prepareStatement(
+                        "INSERT INTO `player_punishments`"
+                                + " (`uuid`, `punishment`, `time_start`, `time_end`, `reason`, `valid`)"
+                                + " VALUES (?, ?, ?, ?, ?, ?)",
+                        Statement.RETURN_GENERATED_KEYS
+                );
+                statement.setString(1, player.getUniqueId().toString());
+                statement.setString(2, type);
+                statement.setLong(3, System.currentTimeMillis());
+                statement.setLong(4, validUntil);
+                statement.setString(5, reason);
+                statement.setInt(6, type.equals("kick") ? 0 : 1);
 
-            statement.executeUpdate();
-            ResultSet key = statement.getGeneratedKeys();
-            key.next();
-            return key.getInt(1);
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+                statement.executeUpdate();
+                ResultSet key = statement.getGeneratedKeys();
+                key.next();
+                return key.getInt(1);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     @Override
@@ -151,27 +153,29 @@ public class MysqlDatabase extends Database {
     }
 
     @Override
-    public int addIpBan(String ip, String reason) {
-        try {
-            PreparedStatement statement = connection.prepareStatement(
-                "INSERT INTO `ip_bans`"
-                        + " (`ip_address`, `time_banned`, `reason`, `valid`)"
-                        + " VALUES (?, ?, ?, ?)",
-                    Statement.RETURN_GENERATED_KEYS
-            );
-            statement.setString(1, ip);
-            statement.setLong(2, System.currentTimeMillis());
-            statement.setString(3, reason);
-            statement.setInt(4, 1);
-            statement.executeUpdate();
+    public CompletableFuture<Integer> addIpBan(String ip, String reason) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                PreparedStatement statement = connection.prepareStatement(
+                        "INSERT INTO `ip_bans`"
+                                + " (`ip_address`, `time_banned`, `reason`, `valid`)"
+                                + " VALUES (?, ?, ?, ?)",
+                        Statement.RETURN_GENERATED_KEYS
+                );
+                statement.setString(1, ip);
+                statement.setLong(2, System.currentTimeMillis());
+                statement.setString(3, reason);
+                statement.setInt(4, 1);
+                statement.executeUpdate();
 
-            statement.executeUpdate();
-            ResultSet key = statement.getGeneratedKeys();
-            key.next();
-            return key.getInt(1);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+                statement.executeUpdate();
+                ResultSet key = statement.getGeneratedKeys();
+                key.next();
+                return key.getInt(1);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     @Override
