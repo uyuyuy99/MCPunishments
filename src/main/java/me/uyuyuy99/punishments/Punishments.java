@@ -50,6 +50,8 @@ public final class Punishments extends JavaPlugin {
             return;
         }
 
+        manager.setDb(database);
+
         try {
             database.connect();
         } catch (Exception e) {
@@ -75,7 +77,7 @@ public final class Punishments extends JavaPlugin {
     }
 
     private void registerTasks() {
-        new TempTask().runTaskTimer(this, 20L, 20L);
+        new TempRemovalTask().runTaskTimer(this, 20L, 20L);
     }
 
     private void registerListeners() {
@@ -94,7 +96,7 @@ public final class Punishments extends JavaPlugin {
                 )
                 .executes((sender, args) -> {
                     OfflinePlayer player = (OfflinePlayer) args.get("player");
-                    String reason = (String) args.getOptional("reason").orElse("");
+                    String reason = (String) args.getOptional("reason").orElse(Config.getMsg("default-reason"));
 
                     if (manager.banPlayer(player, reason)) {
                         Config.sendMsg("admin.ban", sender, "player", args.getRaw("player"));
@@ -117,7 +119,7 @@ public final class Punishments extends JavaPlugin {
                 )
                 .executes((sender, args) -> {
                     String ip = (String) args.get("ip");
-                    String reason = (String) args.getOptional("reason").orElse("");
+                    String reason = (String) args.getOptional("reason").orElse(Config.getMsg("default-reason"));
 
                     if (manager.banIp(ip, reason)) {
                         Config.sendMsg("admin.ip-ban", sender, "ip", ip);
@@ -139,9 +141,9 @@ public final class Punishments extends JavaPlugin {
                 .executes((sender, args) -> {
                     OfflinePlayer player = (OfflinePlayer) args.get("player");
                     int secs = ((int) args.get("time"));
-                    String reason = (String) args.getOptional("reason").orElse("");
+                    String reason = (String) args.getOptional("reason").orElse(Config.getMsg("default-reason"));
 
-                    if (manager.tempBanPlayer(player, reason, secs * 1000L)) {
+                    if (manager.tempBanPlayer(player, reason, secs)) {
                         Config.sendMsg("admin.temp-ban", sender,
                                 "player", args.getRaw("player"),
                                 "time", TimeUtil.formatTime(secs));
@@ -197,7 +199,7 @@ public final class Punishments extends JavaPlugin {
                 )
                 .executes((sender, args) -> {
                     OfflinePlayer player = (OfflinePlayer) args.get("player");
-                    String reason = (String) args.getOptional("reason").orElse("");
+                    String reason = (String) args.getOptional("reason").orElse(Config.getMsg("default-reason"));
 
                     if (manager.mutePlayer(player, reason)) {
                         Config.sendMsg("admin.mute", sender, "player", args.getRaw("player"));
@@ -211,20 +213,20 @@ public final class Punishments extends JavaPlugin {
                 .withPermission("punishments.admin.tempmute")
                 .withArguments(
                         new OfflinePlayerArgument("player"),
-                        new TimeArgument("time")
+                        TimeUtil.arg("time")
                 )
                 .withOptionalArguments(
                         new GreedyStringArgument("reason")
                 )
                 .executes((sender, args) -> {
                     OfflinePlayer player = (OfflinePlayer) args.get("player");
-                    int time = ((int) args.get("time")) * 50;
-                    String reason = (String) args.getOptional("reason").orElse("");
+                    int time = ((int) args.get("time"));
+                    String reason = (String) args.getOptional("reason").orElse(Config.getMsg("default-reason"));
 
                     if (manager.tempMutePlayer(player, reason, time)) {
                         Config.sendMsg("admin.temp-mute", sender,
                                 "player", player.getName(),
-                                "time", TimeUtil.formatTime(time / 1000));
+                                "time", TimeUtil.formatTime(time));
                     } else {
                         Config.sendMsg("admin.already-muted", sender, "player", args.getRaw("player"));
                     }
@@ -258,7 +260,7 @@ public final class Punishments extends JavaPlugin {
                 )
                 .executes((sender, args) -> {
                     Player player = (Player) args.get("player");
-                    String reason = (String) args.getOptional("reason").orElse("N/A");
+                    String reason = (String) args.getOptional("reason").orElse(Config.getMsg("default-reason"));
 
                     player.kickPlayer(Config.getMsg("user.kicked", "reason", reason));
                     database.addKick(player, reason);

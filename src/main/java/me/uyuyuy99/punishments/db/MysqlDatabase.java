@@ -2,6 +2,7 @@ package me.uyuyuy99.punishments.db;
 
 import me.uyuyuy99.punishments.Punishments;
 import me.uyuyuy99.punishments.type.*;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
 import java.sql.*;
@@ -81,7 +82,7 @@ public class MysqlDatabase extends Database {
             String type = result.getString("punishment");
             int id = result.getInt("record_id");
             String uuid = result.getString("uuid");
-            long validUntil = result.getInt("time_end");
+            long validUntil = result.getLong("time_end");
             String reason = result.getString("reason");
 
             if (type.equals("ban")) {
@@ -141,15 +142,17 @@ public class MysqlDatabase extends Database {
 
     @Override
     public void removePlayerPunishment(PlayerPunishment punishment) {
-        try {
-            PreparedStatement statement = connection.prepareStatement(
-                    "UPDATE `player_punishments` SET `valid` = 0 WHERE `record_id` = ?"
-            );
-            statement.setInt(1, punishment.getId());
-            statement.execute();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        Bukkit.getScheduler().runTaskAsynchronously(Punishments.plugin(), () -> {
+            try {
+                PreparedStatement statement = connection.prepareStatement(
+                        "UPDATE `player_punishments` SET `valid` = 0 WHERE `record_id` = ?"
+                );
+                statement.setInt(1, punishment.getId());
+                statement.execute();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     @Override
@@ -166,7 +169,6 @@ public class MysqlDatabase extends Database {
                 statement.setLong(2, System.currentTimeMillis());
                 statement.setString(3, reason);
                 statement.setInt(4, 1);
-                statement.executeUpdate();
 
                 statement.executeUpdate();
                 ResultSet key = statement.getGeneratedKeys();
@@ -180,15 +182,17 @@ public class MysqlDatabase extends Database {
 
     @Override
     public void removeIpBan(IpPunishment punishment) {
-        try {
-            PreparedStatement statement = connection.prepareStatement(
-                    "UPDATE `ip_bans` SET `valid` = 0 WHERE `record_id` = ?"
-            );
-            statement.setInt(1, punishment.getId());
-            statement.execute();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        Bukkit.getScheduler().runTaskAsynchronously(Punishments.plugin(), () -> {
+            try {
+                PreparedStatement statement = connection.prepareStatement(
+                        "UPDATE `ip_bans` SET `valid` = 0 WHERE `record_id` = ?"
+                );
+                statement.setInt(1, punishment.getId());
+                statement.execute();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
 }

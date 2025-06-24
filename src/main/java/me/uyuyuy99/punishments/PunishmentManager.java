@@ -1,6 +1,7 @@
 package me.uyuyuy99.punishments;
 
 import lombok.Getter;
+import lombok.Setter;
 import me.uyuyuy99.punishments.db.Database;
 import me.uyuyuy99.punishments.type.*;
 import me.uyuyuy99.punishments.util.TimeUtil;
@@ -8,7 +9,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -16,6 +16,7 @@ import java.util.UUID;
 @Getter
 public class PunishmentManager {
 
+    @Setter
     private Database db;
 
     private Map<UUID, PlayerBan> playerBans = new HashMap<>();
@@ -23,10 +24,6 @@ public class PunishmentManager {
     private Map<UUID, PlayerMute> playerMutes = new HashMap<>();
     private Map<UUID, PlayerTempMute> playerTempMutes = new HashMap<>();
     private Map<String, IpBan> ipBans = new HashMap<>();
-
-    public PunishmentManager() {
-        this.db = Punishments.plugin().getDatabase();
-    }
 
     public boolean isBanned(OfflinePlayer player) {
         return playerBans.containsKey(player.getUniqueId()) || playerTempBans.containsKey(player.getUniqueId());
@@ -57,17 +54,19 @@ public class PunishmentManager {
     }
 
     // Returns true if player was tempbanned, false if already banned
-    public boolean tempBanPlayer(OfflinePlayer player, String reason, long validUntil) {
+    public boolean tempBanPlayer(OfflinePlayer player, String reason, long validForSecs) {
         if (isBanned(player)) return false;
 
         if (player instanceof Player) {
             ((Player) player).kickPlayer(Config.getMsg("user.temp-banned",
-                    "time", TimeUtil.formatTime(validUntil / 1000),
+                    "time", TimeUtil.formatTime(validForSecs),
                     "reason", reason));
         }
 
+        long validUntil = System.currentTimeMillis() + (validForSecs * 1000L);
+
         db.addBan(player, reason, validUntil).thenAccept((id) -> {
-            PlayerTempBan ban = new PlayerTempBan(id, player, reason, System.currentTimeMillis() + validUntil);
+            PlayerTempBan ban = new PlayerTempBan(id, player, reason, validUntil);
             playerTempBans.put(player.getUniqueId(), ban);
         });
 
@@ -104,17 +103,19 @@ public class PunishmentManager {
     }
 
     // Returns true if player was tempmuted, false if already muted
-    public boolean tempMutePlayer(OfflinePlayer player, String reason, long validUntil) {
+    public boolean tempMutePlayer(OfflinePlayer player, String reason, long validForSecs) {
         if (isMuted(player)) return false;
 
         if (player instanceof Player) {
             Config.sendMsg("user.temp-muted", ((Player) player),
-                    "time", TimeUtil.formatTime(validUntil),
+                    "time", TimeUtil.formatTime(validForSecs),
                     "reason", reason);
         }
 
+        long validUntil = System.currentTimeMillis() + (validForSecs * 1000L);
+
         db.addMute(player, reason, validUntil).thenAccept((id) -> {
-            PlayerTempMute mute = new PlayerTempMute(id, player, reason, System.currentTimeMillis() + validUntil);
+            PlayerTempMute mute = new PlayerTempMute(id, player, reason, validUntil);
             playerTempMutes.put(player.getUniqueId(), mute);
         });
 

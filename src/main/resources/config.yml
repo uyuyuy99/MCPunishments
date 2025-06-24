@@ -16,6 +16,7 @@ mongodb:
   authDatabase: admin  # The database to authenticate the user with
 
 messages:
+  default-reason: "N/A"  # The default ban/mute reason to use when none is provided
   user:
     banned: "&cYou are banned from joining the server for reason: &7{reason}"
     temp-banned: "&cYou are banned from joining the server for &7{time}&c for reason: &7{reason}"
