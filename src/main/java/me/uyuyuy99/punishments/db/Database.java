@@ -2,11 +2,13 @@ package me.uyuyuy99.punishments.db;
 
 import me.uyuyuy99.punishments.PunishmentManager;
 import me.uyuyuy99.punishments.Punishments;
+import me.uyuyuy99.punishments.history.HistoryRecord;
 import me.uyuyuy99.punishments.type.IpPunishment;
 import me.uyuyuy99.punishments.type.PlayerPunishment;
 import org.bukkit.OfflinePlayer;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public abstract class Database {
@@ -22,6 +24,8 @@ public abstract class Database {
     public abstract void disconnect();
 
     public abstract void loadValidPunishments() throws SQLException;
+
+    public abstract CompletableFuture<List<HistoryRecord>> getPlayerHistory(OfflinePlayer player);
 
     protected abstract CompletableFuture<Integer> addPlayerPunishment(String type, OfflinePlayer player, String reason, long validUntil);
 

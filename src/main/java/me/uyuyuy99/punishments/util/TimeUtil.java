@@ -5,13 +5,15 @@ import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.CustomArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class TimeUtil {
 
-    public static String formatTime(final long seconds) {
+    public static String formatTimeAbbr(final long seconds) {
         if (seconds == 0L) {
             return "0s";
         } else {
@@ -69,6 +71,15 @@ public class TimeUtil {
                 return new String[]{};
             }
         }));
+    }
+
+    private static SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, ''yy 'at' HH:mm");
+    public static String formatDate(long epochMs, String defaultText) {
+        if (epochMs <= 0) return defaultText;
+        return dateFormat.format(new Date(epochMs));
+    }
+    public static String formatDate(long epochMs) {
+        return formatDate(epochMs, "");
     }
 
 }

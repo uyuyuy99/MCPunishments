@@ -4,14 +4,13 @@ import me.uyuyuy99.punishments.type.PlayerBan;
 import me.uyuyuy99.punishments.type.PlayerMute;
 import me.uyuyuy99.punishments.type.PlayerTempBan;
 import me.uyuyuy99.punishments.type.PlayerTempMute;
+import me.uyuyuy99.punishments.util.Config;
 import me.uyuyuy99.punishments.util.TimeUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
-
-import java.util.UUID;
 
 public class PunishmentListener implements Listener {
 
@@ -34,7 +33,7 @@ public class PunishmentListener implements Listener {
             } else {
                 PlayerTempBan tempBan = manager.getPlayerTempBans().get(player.getUniqueId());
                 event.setKickMessage(Config.getMsg("user.temp-banned",
-                        "time", TimeUtil.formatTime(tempBan.getValidFor() / 1000),
+                        "time", TimeUtil.formatTimeAbbr(tempBan.getValidFor() / 1000),
                         "reason", tempBan.getReason()));
             }
         }
@@ -56,7 +55,7 @@ public class PunishmentListener implements Listener {
             } else {
                 PlayerTempMute tempMute = manager.getPlayerTempMutes().get(player.getUniqueId());
                 Config.sendMsg("user.temp-muted", player,
-                        "time", TimeUtil.formatTime(tempMute.getValidFor() / 1000),
+                        "time", TimeUtil.formatTimeAbbr(tempMute.getValidFor() / 1000),
                         "reason", tempMute.getReason());
             }
         }

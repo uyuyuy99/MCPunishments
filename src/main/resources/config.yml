@@ -15,6 +15,37 @@ mongodb:
   password: ''
   authDatabase: admin  # The database to authenticate the user with
 
+# This section is for configuring the /history menu
+history-gui:
+  title: "{player}'s History &7({page}/{maxpages})"
+  rows-per-page: 3  # Must be between 1 and 5
+  ban-icon: BARRIER
+  mute-icon: FEATHER
+  kick-icon: STICK
+  next-page-icon: LIME_STAINED_GLASS_PANE
+  previous-page-icon: LIME_STAINED_GLASS_PANE
+  filler-icon: BLACK_STAINED_GLASS_PANE
+  player-text:  # The text shown when hovering over the player head
+    - "&6&n{player}"
+    - " "
+    - "&4Banned: &7{banned}"
+    - "&dMuted: &7{muted}"
+  next-page-text:
+    - "&e&lNext Page --->"
+  previous-page-text:
+    - "&e&l<--- Previous Page"
+  ban-text:
+    - "&4Banned on: &7{start}"
+    - "&4Banned until: &7{end}"
+    - "&4Reason: &7{reason}"
+  mute-text:
+    - "&dMuted on: &7{start}"
+    - "&dMuted until: &7{end}"
+    - "&dReason: &7{reason}"
+  kick-text:
+    - "&cKicked on: &7{start}"
+    - "&cReason: &7{reason}"
+
 messages:
   default-reason: "N/A"  # The default ban/mute reason to use when none is provided
   user:

@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import me.uyuyuy99.punishments.db.Database;
 import me.uyuyuy99.punishments.type.*;
+import me.uyuyuy99.punishments.util.Config;
 import me.uyuyuy99.punishments.util.TimeUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -59,7 +60,7 @@ public class PunishmentManager {
 
         if (player instanceof Player) {
             ((Player) player).kickPlayer(Config.getMsg("user.temp-banned",
-                    "time", TimeUtil.formatTime(validForSecs),
+                    "time", TimeUtil.formatTimeAbbr(validForSecs),
                     "reason", reason));
         }
 
@@ -108,7 +109,7 @@ public class PunishmentManager {
 
         if (player instanceof Player) {
             Config.sendMsg("user.temp-muted", ((Player) player),
-                    "time", TimeUtil.formatTime(validForSecs),
+                    "time", TimeUtil.formatTimeAbbr(validForSecs),
                     "reason", reason);
         }
 

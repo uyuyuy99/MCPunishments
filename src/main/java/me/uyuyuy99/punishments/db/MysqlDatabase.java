@@ -1,11 +1,15 @@
 package me.uyuyuy99.punishments.db;
 
 import me.uyuyuy99.punishments.Punishments;
+import me.uyuyuy99.punishments.history.HistoryRecord;
 import me.uyuyuy99.punishments.type.*;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.checkerframework.checker.units.qual.A;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class MysqlDatabase extends Database {
@@ -73,17 +77,17 @@ public class MysqlDatabase extends Database {
 
     @Override
     public void loadValidPunishments() throws SQLException {
-        Statement statement = connection.createStatement();
-        ResultSet result = statement.executeQuery("SELECT * FROM player_punishments WHERE valid = 1");
+        Statement playerStatement = connection.createStatement();
+        ResultSet playerResult = playerStatement.executeQuery("SELECT * FROM player_punishments WHERE valid = 1");
 
-        int bans = 0, mutes = 0;
+        int bans = 0, mutes = 0, ipbans = 0;
 
-        while (result.next()) {
-            String type = result.getString("punishment");
-            int id = result.getInt("record_id");
-            String uuid = result.getString("uuid");
-            long validUntil = result.getLong("time_end");
-            String reason = result.getString("reason");
+        while (playerResult.next()) {
+            int id = playerResult.getInt("record_id");
+            String type = playerResult.getString("punishment");
+            String uuid = playerResult.getString("uuid");
+            long validUntil = playerResult.getLong("time_end");
+            String reason = playerResult.getString("reason");
 
             if (type.equals("ban")) {
                 if (validUntil == 0) {
@@ -106,11 +110,55 @@ public class MysqlDatabase extends Database {
                 mutes++;
             }
         }
-        result.close();
-        statement.close();
+        playerResult.close();
+        playerStatement.close();
+
+        Statement ipStatement = connection.createStatement();
+        ResultSet ipResult = ipStatement.executeQuery("SELECT * FROM ip_bans WHERE valid = 1");
+
+        while (ipResult.next()) {
+            int id = ipResult.getInt("record_id");
+            String address = ipResult.getString("ip_address");
+            String reason = ipResult.getString("reason");
+
+            IpBan ban = new IpBan(id, address, reason);
+            manager.getIpBans().put(address, ban);
+            ipbans++;
+        }
+        ipResult.close();
+        ipStatement.close();
 
         Punishments.plugin().getLogger().info(
-                "Successfully loaded " + bans + " active bans and " + mutes + " active mutes from MySQL.");
+                "Successfully loaded " + bans + " active bans, " + mutes + " active mutes, and " + ipbans + " active IP bans from MySQL.");
+    }
+
+    @Override
+    public CompletableFuture<List<HistoryRecord>> getPlayerHistory(OfflinePlayer player) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                PreparedStatement statement = connection.prepareStatement("SELECT * FROM player_punishments WHERE uuid = ?");
+                statement.setString(1, player.getUniqueId().toString());
+                ResultSet result = statement.executeQuery();
+
+                List<HistoryRecord> history = new ArrayList<>();
+                while (result.next()) {
+                    String type = result.getString("punishment");
+                    long start = result.getLong("time_start");
+                    long end = result.getLong("time_end");
+                    String reason = result.getString("reason");
+                    int valid = result.getInt("valid");
+
+                    history.add(new HistoryRecord(type, start, end, reason, valid));
+                }
+
+                result.close();
+                statement.close();
+
+                return history;
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     @Override
@@ -133,7 +181,10 @@ public class MysqlDatabase extends Database {
                 statement.executeUpdate();
                 ResultSet key = statement.getGeneratedKeys();
                 key.next();
-                return key.getInt(1);
+                int id = key.getInt(1);
+                key.close();
+                statement.close();
+                return id;
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
@@ -149,6 +200,7 @@ public class MysqlDatabase extends Database {
                 );
                 statement.setInt(1, punishment.getId());
                 statement.execute();
+                statement.close();
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
@@ -173,7 +225,10 @@ public class MysqlDatabase extends Database {
                 statement.executeUpdate();
                 ResultSet key = statement.getGeneratedKeys();
                 key.next();
-                return key.getInt(1);
+                int id = key.getInt(1);
+                key.close();
+                statement.close();
+                return id;
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
@@ -189,6 +244,7 @@ public class MysqlDatabase extends Database {
                 );
                 statement.setInt(1, punishment.getId());
                 statement.execute();
+                statement.close();
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }

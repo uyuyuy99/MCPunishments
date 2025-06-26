@@ -1,5 +1,6 @@
 package me.uyuyuy99.punishments;
 
+import de.themoep.inventorygui.InventoryGui;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIBukkitConfig;
 import dev.jorel.commandapi.CommandAPICommand;
@@ -7,7 +8,10 @@ import dev.jorel.commandapi.arguments.*;
 import lombok.Getter;
 import me.uyuyuy99.punishments.db.Database;
 import me.uyuyuy99.punishments.db.MysqlDatabase;
+import me.uyuyuy99.punishments.history.HistoryGui;
+import me.uyuyuy99.punishments.util.Config;
 import me.uyuyuy99.punishments.util.TimeUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -88,6 +92,7 @@ public final class Punishments extends JavaPlugin {
         CommandAPI.unregister("ban");
         new CommandAPICommand("ban")
                 .withPermission("punishments.admin.ban")
+                .withFullDescription("Permanently ban a player")
                 .withArguments(
                         new OfflinePlayerArgument("player")
                 )
@@ -100,7 +105,6 @@ public final class Punishments extends JavaPlugin {
 
                     if (manager.banPlayer(player, reason)) {
                         Config.sendMsg("admin.ban", sender, "player", args.getRaw("player"));
-                        //TODO test
                     } else {
                         Config.sendMsg("admin.already-banned", sender, "player", args.getRaw("player"));
                     }
@@ -111,6 +115,7 @@ public final class Punishments extends JavaPlugin {
         new CommandAPICommand("ban")
                 .withAliases("ban-ip")
                 .withPermission("punishments.admin.ban")
+                .withFullDescription("Ban an IP address")
                 .withArguments(
                         new StringArgument("ip")
                 )
@@ -131,6 +136,7 @@ public final class Punishments extends JavaPlugin {
 
         new CommandAPICommand("tempban")
                 .withPermission("punishments.admin.tempban")
+                .withFullDescription("Temporarily ban a player")
                 .withArguments(
                         new OfflinePlayerArgument("player"),
                         TimeUtil.arg("time")
@@ -146,7 +152,7 @@ public final class Punishments extends JavaPlugin {
                     if (manager.tempBanPlayer(player, reason, secs)) {
                         Config.sendMsg("admin.temp-ban", sender,
                                 "player", args.getRaw("player"),
-                                "time", TimeUtil.formatTime(secs));
+                                "time", TimeUtil.formatTimeAbbr(secs));
                     } else {
                         Config.sendMsg("admin.already-banned", sender, "player", args.getRaw("player"));
                     }
@@ -157,6 +163,7 @@ public final class Punishments extends JavaPlugin {
         new CommandAPICommand("unban")
                 .withAliases("pardon")
                 .withPermission("punishments.admin.unban")
+                .withFullDescription("Unban a player")
                 .withArguments(
                         new OfflinePlayerArgument("player")
                 )
@@ -175,6 +182,7 @@ public final class Punishments extends JavaPlugin {
         new CommandAPICommand("unbanip")
                 .withAliases("pardon-ip")
                 .withPermission("punishments.admin.unban")
+                .withFullDescription("Unban an IP address")
                 .withArguments(
                         new StringArgument("ip")
                 )
@@ -191,6 +199,7 @@ public final class Punishments extends JavaPlugin {
 
         new CommandAPICommand("mute")
                 .withPermission("punishments.admin.mute")
+                .withFullDescription("Permanently mute a player")
                 .withArguments(
                         new OfflinePlayerArgument("player")
                 )
@@ -211,6 +220,7 @@ public final class Punishments extends JavaPlugin {
 
         new CommandAPICommand("tempmute")
                 .withPermission("punishments.admin.tempmute")
+                .withFullDescription("Temporarily mute a player")
                 .withArguments(
                         new OfflinePlayerArgument("player"),
                         TimeUtil.arg("time")
@@ -226,7 +236,7 @@ public final class Punishments extends JavaPlugin {
                     if (manager.tempMutePlayer(player, reason, time)) {
                         Config.sendMsg("admin.temp-mute", sender,
                                 "player", player.getName(),
-                                "time", TimeUtil.formatTime(time));
+                                "time", TimeUtil.formatTimeAbbr(time));
                     } else {
                         Config.sendMsg("admin.already-muted", sender, "player", args.getRaw("player"));
                     }
@@ -235,6 +245,7 @@ public final class Punishments extends JavaPlugin {
 
         new CommandAPICommand("unmute")
                 .withPermission("punishments.admin.unmute")
+                .withFullDescription("Unmute a player")
                 .withArguments(
                         new OfflinePlayerArgument("player")
                 )
@@ -252,6 +263,7 @@ public final class Punishments extends JavaPlugin {
         CommandAPI.unregister("kick");
         new CommandAPICommand("kick")
                 .withPermission("punishments.admin.kick")
+                .withFullDescription("Kick a player")
                 .withArguments(
                         new PlayerArgument("player")
                 )
@@ -265,6 +277,26 @@ public final class Punishments extends JavaPlugin {
                     player.kickPlayer(Config.getMsg("user.kicked", "reason", reason));
                     database.addKick(player, reason);
                     Config.sendMsg("admin.kick", sender, "player", args.getRaw("player"), "reason", reason);
+                })
+                .register();
+
+        new CommandAPICommand("history")
+                .withPermission("punishments.admin.history")
+                .withFullDescription("View a player's punishment history")
+                .withArguments(
+                        new OfflinePlayerArgument("player")
+                )
+                .executesPlayer((sender, args) -> {
+                    OfflinePlayer player = (OfflinePlayer) args.get("player");
+                    database.getPlayerHistory(player).thenAccept((history) -> {
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(Punishments.this, () -> {
+                            InventoryGui gui = new HistoryGui(sender, player, args.getRaw("player"), history);
+                            gui.show(sender);
+                        }, 0L);
+                    }).exceptionally((e) -> {
+                        e.printStackTrace();
+                        return null;
+                    });
                 })
                 .register();
     }
