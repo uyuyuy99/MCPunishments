@@ -180,7 +180,6 @@ public class HistoryGui extends InventoryGui {
     @Override
     public void draw(HumanEntity who, boolean updateDynamic, boolean recreateInventory) {
         updateTitle();
-        Bukkit.getLogger().info("TEST");
         super.draw(who, updateDynamic, recreateInventory);
     }
 
