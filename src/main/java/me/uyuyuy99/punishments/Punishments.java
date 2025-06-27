@@ -12,7 +12,9 @@ import me.uyuyuy99.punishments.history.HistoryGui;
 import me.uyuyuy99.punishments.util.Config;
 import me.uyuyuy99.punishments.util.TimeUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -78,6 +80,7 @@ public final class Punishments extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        database.disconnect();
     }
 
     private void registerTasks() {
@@ -102,6 +105,7 @@ public final class Punishments extends JavaPlugin {
                 .executes((sender, args) -> {
                     OfflinePlayer player = (OfflinePlayer) args.get("player");
                     String reason = (String) args.getOptional("reason").orElse(Config.getMsg("default-reason"));
+                    if (checkReasonTooLong(sender, reason)) return;
 
                     if (manager.banPlayer(player, reason)) {
                         Config.sendMsg("admin.ban", sender, "player", args.getRaw("player"));
@@ -125,6 +129,7 @@ public final class Punishments extends JavaPlugin {
                 .executes((sender, args) -> {
                     String ip = (String) args.get("ip");
                     String reason = (String) args.getOptional("reason").orElse(Config.getMsg("default-reason"));
+                    if (checkReasonTooLong(sender, reason)) return;
 
                     if (manager.banIp(ip, reason)) {
                         Config.sendMsg("admin.ip-ban", sender, "ip", ip);
@@ -148,6 +153,7 @@ public final class Punishments extends JavaPlugin {
                     OfflinePlayer player = (OfflinePlayer) args.get("player");
                     int secs = ((int) args.get("time"));
                     String reason = (String) args.getOptional("reason").orElse(Config.getMsg("default-reason"));
+                    if (checkReasonTooLong(sender, reason)) return;
 
                     if (manager.tempBanPlayer(player, reason, secs)) {
                         Config.sendMsg("admin.temp-ban", sender,
@@ -209,6 +215,7 @@ public final class Punishments extends JavaPlugin {
                 .executes((sender, args) -> {
                     OfflinePlayer player = (OfflinePlayer) args.get("player");
                     String reason = (String) args.getOptional("reason").orElse(Config.getMsg("default-reason"));
+                    if (checkReasonTooLong(sender, reason)) return;
 
                     if (manager.mutePlayer(player, reason)) {
                         Config.sendMsg("admin.mute", sender, "player", args.getRaw("player"));
@@ -232,6 +239,7 @@ public final class Punishments extends JavaPlugin {
                     OfflinePlayer player = (OfflinePlayer) args.get("player");
                     int time = ((int) args.get("time"));
                     String reason = (String) args.getOptional("reason").orElse(Config.getMsg("default-reason"));
+                    if (checkReasonTooLong(sender, reason)) return;
 
                     if (manager.tempMutePlayer(player, reason, time)) {
                         Config.sendMsg("admin.temp-mute", sender,
@@ -273,6 +281,7 @@ public final class Punishments extends JavaPlugin {
                 .executes((sender, args) -> {
                     Player player = (Player) args.get("player");
                     String reason = (String) args.getOptional("reason").orElse(Config.getMsg("default-reason"));
+                    if (checkReasonTooLong(sender, reason)) return;
 
                     player.kickPlayer(Config.getMsg("user.kicked", "reason", reason));
                     database.addKick(player, reason);
@@ -299,6 +308,16 @@ public final class Punishments extends JavaPlugin {
                     });
                 })
                 .register();
+    }
+
+    // Returns TRUE if ban/mute/kick reason is too long
+    private boolean checkReasonTooLong(CommandSender sender, String reason) {
+        int max = getConfig().getInt("misc.max-reason-length", 100);
+        if (reason.length() > max) {
+            sender.sendMessage(ChatColor.RED + "ERROR: Reason can't be longer than " + max + " characters.");
+            return true;
+        }
+        return false;
     }
 
     public static Punishments plugin() {

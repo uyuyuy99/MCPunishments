@@ -71,3 +71,6 @@ messages:
     wasnt-banned: "&cPlayer &7{player}&c is not currently banned."
     wasnt-ip-banned: "&cThe IP &7{ip}&c is not currently banned."
     wasnt-muted: "&cPlayer &7{player}&c is not currently muted."
+
+misc:
+  max-reason-length: 100  # Max characters for ban/mute/kick reason
