@@ -4,9 +4,13 @@ import de.themoep.inventorygui.InventoryGui;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIBukkitConfig;
 import dev.jorel.commandapi.CommandAPICommand;
-import dev.jorel.commandapi.arguments.*;
+import dev.jorel.commandapi.arguments.GreedyStringArgument;
+import dev.jorel.commandapi.arguments.OfflinePlayerArgument;
+import dev.jorel.commandapi.arguments.PlayerArgument;
+import dev.jorel.commandapi.arguments.StringArgument;
 import lombok.Getter;
 import me.uyuyuy99.punishments.db.Database;
+import me.uyuyuy99.punishments.db.MongoDatabase;
 import me.uyuyuy99.punishments.db.MysqlDatabase;
 import me.uyuyuy99.punishments.history.HistoryGui;
 import me.uyuyuy99.punishments.util.Config;
@@ -49,7 +53,13 @@ public final class Punishments extends JavaPlugin {
         } else if (storageType.equals("sqlite")) {
             //TODO
         } else if (storageType.equals("mongodb")) {
-            //TODO
+            database = new MongoDatabase(
+                    getConfig().getString("mongodb.host"),
+                    getConfig().getInt("mongodb.port"),
+                    getConfig().getString("mongodb.database"),
+                    getConfig().getString("mongodb.user"),
+                    getConfig().getString("mongodb.password")
+            );
         } else {
             getLogger().info("Incorrect storage-type found in config.yml. Please set it to either: mysql, sqlite, or mongodb");
             getServer().getPluginManager().disablePlugin(this);
@@ -116,7 +126,7 @@ public final class Punishments extends JavaPlugin {
                 .register();
 
         CommandAPI.unregister("ban-ip");
-        new CommandAPICommand("ban")
+        new CommandAPICommand("banip")
                 .withAliases("ban-ip")
                 .withPermission("punishments.admin.ban")
                 .withFullDescription("Ban an IP address")

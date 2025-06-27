@@ -13,7 +13,6 @@ mongodb:
   database: punishments
   user: root
   password: ''
-  authDatabase: admin  # The database to authenticate the user with
 
 # This section is for configuring the /history menu
 history-gui:
