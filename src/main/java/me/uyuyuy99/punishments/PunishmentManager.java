@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Getter
 public class PunishmentManager {
@@ -20,11 +21,11 @@ public class PunishmentManager {
     @Setter
     private Database db;
 
-    private Map<UUID, PlayerBan> playerBans = new HashMap<>();
-    private Map<UUID, PlayerTempBan> playerTempBans = new HashMap<>();
-    private Map<UUID, PlayerMute> playerMutes = new HashMap<>();
-    private Map<UUID, PlayerTempMute> playerTempMutes = new HashMap<>();
-    private Map<String, IpBan> ipBans = new HashMap<>();
+    private Map<UUID, PlayerBan> playerBans = new ConcurrentHashMap<>();
+    private Map<UUID, PlayerTempBan> playerTempBans = new ConcurrentHashMap<>();
+    private Map<UUID, PlayerMute> playerMutes = new ConcurrentHashMap<>();
+    private Map<UUID, PlayerTempMute> playerTempMutes = new ConcurrentHashMap<>();
+    private Map<String, IpBan> ipBans = new ConcurrentHashMap<>();
 
     public boolean isBanned(OfflinePlayer player) {
         return playerBans.containsKey(player.getUniqueId()) || playerTempBans.containsKey(player.getUniqueId());
