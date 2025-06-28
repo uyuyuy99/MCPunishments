@@ -129,7 +129,7 @@ public final class Punishments extends JavaPlugin {
         CommandAPI.unregister("ban-ip");
         new CommandAPICommand("banip")
                 .withAliases("ban-ip")
-                .withPermission("punishments.admin.ban")
+                .withPermission("punishments.admin.banip")
                 .withFullDescription("Ban an IP address")
                 .withArguments(
                         new StringArgument("ip")
@@ -198,7 +198,7 @@ public final class Punishments extends JavaPlugin {
         CommandAPI.unregister("pardon-ip");
         new CommandAPICommand("unbanip")
                 .withAliases("pardon-ip")
-                .withPermission("punishments.admin.unban")
+                .withPermission("punishments.admin.unbanip")
                 .withFullDescription("Unban an IP address")
                 .withArguments(
                         new StringArgument("ip")
