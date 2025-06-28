@@ -12,6 +12,7 @@ import lombok.Getter;
 import me.uyuyuy99.punishments.db.Database;
 import me.uyuyuy99.punishments.db.MongoDatabase;
 import me.uyuyuy99.punishments.db.MysqlDatabase;
+import me.uyuyuy99.punishments.db.SqliteDatabase;
 import me.uyuyuy99.punishments.history.HistoryGui;
 import me.uyuyuy99.punishments.util.Config;
 import me.uyuyuy99.punishments.util.TimeUtil;
@@ -51,7 +52,7 @@ public final class Punishments extends JavaPlugin {
                     getConfig().getString("mysql.password")
             );
         } else if (storageType.equals("sqlite")) {
-            //TODO
+            database = new SqliteDatabase();
         } else if (storageType.equals("mongodb")) {
             database = new MongoDatabase(
                     getConfig().getString("mongodb.host"),

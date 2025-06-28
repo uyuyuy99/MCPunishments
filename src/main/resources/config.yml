@@ -1,4 +1,4 @@
-storage-type: mysql  # Choose between mysql, sqlite, mongodb
+storage-type: sqlite  # Choose between mysql, sqlite, mongodb
 mysql:
   # If you choose mysql as your storage-type, fill out these details
   host: 127.0.0.1

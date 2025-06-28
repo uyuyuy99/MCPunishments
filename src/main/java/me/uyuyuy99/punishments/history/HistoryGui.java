@@ -1,6 +1,9 @@
 package me.uyuyuy99.punishments.history;
 
-import de.themoep.inventorygui.*;
+import de.themoep.inventorygui.GuiElementGroup;
+import de.themoep.inventorygui.GuiStateElement;
+import de.themoep.inventorygui.InventoryGui;
+import de.themoep.inventorygui.StaticGuiElement;
 import me.uyuyuy99.punishments.PunishmentManager;
 import me.uyuyuy99.punishments.Punishments;
 import me.uyuyuy99.punishments.type.PlayerTempBan;
@@ -8,7 +11,6 @@ import me.uyuyuy99.punishments.type.PlayerTempMute;
 import me.uyuyuy99.punishments.util.CC;
 import me.uyuyuy99.punishments.util.Config;
 import me.uyuyuy99.punishments.util.TimeUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.HumanEntity;

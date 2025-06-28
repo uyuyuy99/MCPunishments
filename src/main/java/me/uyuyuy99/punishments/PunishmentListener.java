@@ -1,9 +1,6 @@
 package me.uyuyuy99.punishments;
 
-import me.uyuyuy99.punishments.type.PlayerBan;
-import me.uyuyuy99.punishments.type.PlayerMute;
-import me.uyuyuy99.punishments.type.PlayerTempBan;
-import me.uyuyuy99.punishments.type.PlayerTempMute;
+import me.uyuyuy99.punishments.type.*;
 import me.uyuyuy99.punishments.util.Config;
 import me.uyuyuy99.punishments.util.TimeUtil;
 import org.bukkit.entity.Player;
@@ -38,6 +35,8 @@ public class PunishmentListener implements Listener {
             }
         }
         else if (manager.isIpBanned(event.getAddress().getHostAddress())) {
+            IpBan ban = manager.getIpBans().get(event.getAddress().getHostAddress());
+            event.setKickMessage(Config.getMsg("user.banned", "reason", ban.getReason()));
             event.setResult(PlayerLoginEvent.Result.KICK_BANNED);
         }
     }
